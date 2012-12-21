@@ -1,5 +1,7 @@
 # Mayan Calendar
 
+[Click here to view current version](http://shaunew.github.com/MayanCalendar/)
+
 21 Dec 2012 on the Gregorian Calendar marked the beginning of a new cycle on the Mayan Long Count Calendar.
 
 The purpose of this project is to illustrate the different cycles represented by the ancient Mayan Calendars.
