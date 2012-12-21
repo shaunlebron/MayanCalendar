@@ -17,7 +17,7 @@ Mayan.runTests = function(){
     assertEqual(c.count, 0);
     assertEqual(c.tzolkin.toString(), "4.ajaw");
     assertEqual(c.haab.toString(), "8.kumku");
-    assertEqual(c.lords.toString(), "G9");
+    assertEqual(c.lords.toString(), "g9");
     assertEqual(c.getGregorian(), [-3113,8,11]);
 
     c.set(13,0,0,0,0);
@@ -25,7 +25,7 @@ Mayan.runTests = function(){
     assertEqual(c.count, 1872000);
     assertEqual(c.tzolkin.toString(), "4.ajaw");
     assertEqual(c.haab.toString(), "3.kankin");
-    assertEqual(c.lords.toString(), "G9");
+    assertEqual(c.lords.toString(), "g9");
     assertEqual(c.getGregorian(), [2012,12,21]);
 
     c.setFromGregorian(1987,7,2);
@@ -33,7 +33,7 @@ Mayan.runTests = function(){
     assertEqual(c.count, 1862696);
     assertEqual(c.tzolkin.toString(), "8.kib");
     assertEqual(c.haab.toString(), "4.sek");
-    assertEqual(c.lords.toString(), "G2");
+    assertEqual(c.lords.toString(), "g2");
     assertEqual(c.getGregorian(), [1987,7,2]);
 };
 
@@ -143,7 +143,15 @@ Mayan.Tzolkin.prototype = {
     },
 
     toString: function() {
-        return (this.num+1) + "." + Mayan.tzolkin_days[this.day];
+        return this.getNumName() + "." + this.getDayName();
+    },
+
+    getNumName: function() {
+        return this.num+1;
+    },
+
+    getDayName: function() {
+        return Mayan.tzolkin_days[this.day];
     },
 };
 
@@ -171,7 +179,15 @@ Mayan.Haab.prototype = {
     },
 
     toString: function() {
-        return this.day + "." + Mayan.haab_months[this.month];
+        return this.getDayName() + "." + this.getMonthName();
+    },
+
+    getDayName: function() {
+        return this.day;
+    },
+
+    getMonthName: function() {
+        return Mayan.haab_months[this.month];
     },
 };
 
@@ -189,7 +205,7 @@ Mayan.Lords.prototype = {
     },
 
     toString: function() {
-        return "G"+(this.lord+1);
+        return "g"+(this.lord+1);
     },
 };
 
