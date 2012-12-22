@@ -8,13 +8,14 @@ Mayan.Stela = function(canvas,cal) {
 
 Mayan.Stela.prototype = {
     render: function() {
+        var canvas = this.canvas;
         var ctx = this.ctx;
         var cal = this.cal;
         var glyphs = Mayan.glyphImages;
 
 
 
-        ctx.clearRect(0,0,640,94);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         var x = 0;
         var y = 0;
         var drawGlyph = function(g) {
