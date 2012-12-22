@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <title>Mayan Calendar</title>
 <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -14,14 +14,17 @@
         <label>Gregorian Date</label>
         <input type="text" id="dp1" />
     </div>
-    <div id="stela" class="well navbar-fixed-bottom" style="text-align:center">
-</div>
+    <div class="well navbar-fixed-bottom" style="text-align:center">
+            <canvas id="stela" width="700" height="94"></canvas>
+    </div>
 </div>
 
 
 <script src="lib/astro.js"></script>
 <script src="lib/calendar.js"></script>
 <script src="mayan.js"></script>
+<script src="glyphs.js"></script>
+<script src="stela.js"></script>
 <script src="lib/jquery-1.8.3.min.js"></script>
 <script src="lib/bootstrap/js/bootstrap.js"></script>
 <script src="lib/datepicker/js/bootstrap-datepicker.js"></script>
@@ -30,27 +33,19 @@
     var cal = new Mayan.LongCount;
     var stela;
 
-    var getImgTag = function(name) {
-        return '<img src="'+Mayan.glyphs[name]+'"/>';
-    };
-
     var updateGlyphs = function(year,month,day) {
         cal.setFromGregorian(year,month,day);
-        stela.html('');
-        stela.append(getImgTag(cal.baktun)+getImgTag('baktun'));
-        stela.append(getImgTag(cal.katun)+getImgTag('katun'));
-        stela.append(getImgTag(cal.tun)+getImgTag('tun'));
-        stela.append(getImgTag(cal.winal)+getImgTag('winal'));
-        stela.append(getImgTag(cal.kin)+getImgTag('kin'));
-        stela.append(getImgTag(cal.tzolkin.getNumName())+getImgTag(cal.tzolkin.getDayName()));
-        stela.append(getImgTag(cal.haab.getDayName())+getImgTag(cal.haab.getMonthName()));
-        stela.append(getImgTag(cal.lords.toString()));
+        stela.render();
     };
 
     $(function(){
-        stela = $("#stela");
+
+        Mayan.loadGlyphs();
+
+        stela = new Mayan.Stela(document.getElementById("stela"), cal);
+
         var updateDate = function(d) {
-            updateGlyphs(d.getFullYear(), d.getMonth()+1, d.getUTCDate());
+            updateGlyphs(d.getFullYear(), d.getMonth()+1, d.getDate());
         };
 
         $('#dp1').datepicker({
