@@ -113,6 +113,10 @@ Mayan.LongCount.prototype = {
         this.set.apply(this, jd_to_mayan_count(jd));
     },
 
+    setFromDateObject: function(d) {
+        this.setFromGregorian(d.getFullYear(), d.getMonth()+1, d.getDate());
+    },
+
     getGregorian: function() {
         var jd = mayan_count_to_jd(this.baktun, this.katun, this.tun, this.winal, this.kin);
         return jd_to_gregorian(jd);

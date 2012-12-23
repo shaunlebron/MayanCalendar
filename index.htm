@@ -20,46 +20,36 @@
 </div>
 
 
+<script src="lib/requestAnimationFrame.js"></script>
 <script src="lib/astro.js"></script>
 <script src="lib/calendar.js"></script>
-<script src="mayan.js"></script>
-<script src="glyphs.js"></script>
-<script src="stela.js"></script>
+<script src="mayan/calendar.js"></script>
+<script src="mayan/glyphs.js"></script>
+<script src="mayan/stela.js"></script>
+<script src="mayan/renderer.js"></script>
 <script src="lib/jquery-1.8.3.min.js"></script>
 <script src="lib/bootstrap/js/bootstrap.js"></script>
 <script src="lib/datepicker/js/bootstrap-datepicker.js"></script>
 <script>
-(function(){
-    var cal = new Mayan.LongCount;
-    var stela;
-
-    var updateGlyphs = function(year,month,day) {
-        cal.setFromGregorian(year,month,day);
-        stela.render();
-    };
 
     $(function(){
 
+        var cal = new Mayan.LongCount;
+        var renderer = new Mayan.Renderer(cal, document.getElementById('stela'));
         Mayan.loadGlyphs();
-
-        stela = new Mayan.Stela(document.getElementById("stela"), cal);
-
-        var updateDate = function(d) {
-            updateGlyphs(d.getFullYear(), d.getMonth()+1, d.getDate());
-        };
 
         $('#dp1').datepicker({
             format: 'mm-dd-yyyy'
         }).on('changeDate', function(ev) {
-            updateDate(ev.date);
+            cal.setFromDateObject(ev.date);
         });
 
         var d = new Date();
         $('#dp1').datepicker('setValue', d);
-        updateDate(d);
-    });
 
-})();
+        requestAnimationFrame(function(){renderer.render();});
+
+    });
 </script>
 
 </body>
