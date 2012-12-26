@@ -19,22 +19,43 @@ Mayan.Stela.prototype = {
         var drawGlyph = function(g) {
             var img = glyphs[g];
             ctx.drawImage(img, x, y);
-            x += img.width;
+            var bounds = Mayan.glyphBounds[Mayan.getGlyphGroup(g)];
+            x += bounds.width;
         };
-        drawGlyph(cal.baktun);
+        drawGlyph(String(cal.baktun));
         drawGlyph("baktun");
-        drawGlyph(cal.katun);
+        drawGlyph(String(cal.katun));
         drawGlyph("katun");
-        drawGlyph(cal.tun);
+        drawGlyph(String(cal.tun));
         drawGlyph("tun");
-        drawGlyph(cal.winal);
+        drawGlyph(String(cal.winal));
         drawGlyph("winal");
-        drawGlyph(cal.kin);
+        drawGlyph(String(cal.kin));
         drawGlyph("kin");
         drawGlyph(cal.tzolkin.getNumName());
         drawGlyph(cal.tzolkin.getDayName());
         drawGlyph(cal.haab.getDayName());
         drawGlyph(cal.haab.getMonthName());
         drawGlyph(cal.lords.toString());
+    },
+    getCanvasBounds: function() {
+        var w = 0;
+        var h = 0;
+        var b;
+        var bounds = Mayan.glyphBounds;
+        for (b in bounds) {
+            if (bounds.hasOwnProperty(b)) {
+                h = Math.max(h, bounds[b].height);
+                w += bounds[b].width;
+            }
+        }
+        w += Mayan.glyphBounds["numerals"].width * 6;
+        w += Mayan.glyphBounds["long"].width * 4;
+        return [w,h];
+    },
+    updateCanvasSize: function() {
+        var bounds = this.getCanvasBounds();
+        this.canvas.width = bounds[0];
+        this.canvas.height = bounds[1];
     },
 };

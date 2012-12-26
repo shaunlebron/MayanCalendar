@@ -86,15 +86,166 @@ Mayan.glyphSources = {
     "g9": "img/g9.gif",
 };
 
+Mayan.glyphGroups = {
+    "numerals": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+    ],
+    "long": [
+        "baktun",
+        "katun",
+        "tun",
+        "winal",
+        "kin",
+    ],
+    "tzolkin": [
+        "ajaw",
+        "akbal",
+        "ben",
+        "chikchan",
+        "chuwen",
+        "eb",
+        "etznab",
+        "ik",
+        "imix",
+        "ix",
+        "kaban",
+        "kan",
+        "kawak",
+        "kib",
+        "kimi",
+        "lamat",
+        "manik",
+        "men",
+        "muluk",
+        "ok",
+    ],
+    "haab": [
+        "chen",
+        "kankin",
+        "kayab",
+        "keh",
+        "kumku",
+        "mak",
+        "mol",
+        "muwan",
+        "pax",
+        "pop",
+        "sak",
+        "sek",
+        "sip",
+        "sotz",
+        "wayeb",
+        "wo",
+        "xul",
+        "yax",
+        "yaxkin",
+    ],
+    "lords": [
+        "g1",
+        "g2",
+        "g3",
+        "g4",
+        "g5",
+        "g6",
+        "g7",
+        "g8",
+        "g9",
+    ],
+};
+
+Mayan.getGlyphGroup = function(glyphName) {
+    var groups = Mayan.glyphGroups;
+    for (group in groups) {
+        if (groups.hasOwnProperty(group) && groups[group].indexOf(glyphName) != -1) {
+            return group;
+        }
+    }
+    return null;
+};
+
+Mayan.glyphBounds = {
+    "numerals": {
+        width: 0,
+        height: 0,
+    },
+    "long": {
+        width: 0,
+        height: 0,
+    },
+    "tzolkin": {
+        width: 0,
+        height: 0,
+    },
+    "haab": {
+        width: 0,
+        height: 0,
+    },
+    "lords": {
+        width: 0,
+        height: 0,
+    },
+};
+
 Mayan.glyphImages = {};
 
-Mayan.loadGlyphs = function() {
+Mayan.loadGlyphs = function(onAllLoaded) {
+    var name;
     var sources = Mayan.glyphSources;
+    var img, group, bounds, handler;
+    var numGlyphs = 0;
     for (name in sources) {
         if (sources.hasOwnProperty(name)) {
-            var img = new Image();
+            numGlyphs++;
+        }
+    }
+    for (name in sources) {
+        if (sources.hasOwnProperty(name)) {
+            img = new Image();
             img.src = sources[name];
+            group = Mayan.getGlyphGroup(name);
+            bounds = Mayan.glyphBounds[group];
+            handler = (function(img,bounds){
+                var loaded = false;
+                return function() {
+                    if (loaded) {
+                        return;
+                    }
+                    loaded = true;
+                    bounds.width = Math.max(bounds.width, img.width);
+                    bounds.height = Math.max(bounds.height, img.height);
+                    numGlyphs--;
+                    if (numGlyphs == 0) {
+                        if (onAllLoaded) {
+                            onAllLoaded();
+                        }
+                    }
+                };
+            })(img,bounds);
+            img.onload = handler;
+            if (img.complete) {
+                handler();
+            }
             Mayan.glyphImages[name] = img;
         }
     }
 };
+

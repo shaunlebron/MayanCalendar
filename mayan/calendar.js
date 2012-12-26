@@ -114,7 +114,7 @@ Mayan.Tzolkin.prototype = {
     },
 
     getNumName: function() {
-        return this.num+1;
+        return String(this.num+1);
     },
 
     getDayName: function() {
@@ -150,7 +150,7 @@ Mayan.Haab.prototype = {
     },
 
     getDayName: function() {
-        return this.day;
+        return String(this.day);
     },
 
     getMonthName: function() {

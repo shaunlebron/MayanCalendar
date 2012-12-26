@@ -16,7 +16,7 @@
         <input type="text" id="dp1" />
     </div>
     <div class="well navbar-fixed-bottom" style="text-align:center">
-            <canvas id="stela" width="700" height="94"></canvas>
+            <canvas id="stela" width="0" height="0"></canvas>
     </div>
 </div>
 
@@ -42,7 +42,10 @@
 
         var cal = new Mayan.LongCount;
         var renderer = new Mayan.Renderer(cal, document.getElementById('stela'));
-        Mayan.loadGlyphs();
+        Mayan.loadGlyphs(function() {
+            renderer.stela.updateCanvasSize();
+        });
+
 
         $('#dp1').datepicker({
             format: 'mm-dd-yyyy'
@@ -55,7 +58,6 @@
         cal.setFromDateObject(d);
 
         requestAnimationFrame(function(){renderer.render();});
-
     });
 </script>
 
