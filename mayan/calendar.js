@@ -1,42 +1,5 @@
 var Mayan = Mayan || {};
 
-/////////////////////
-// Tests
-
-Mayan.runTests = function(){
-    var assertEqual = function(a,b) {
-        if (a+"" !== b+"") {
-            console.error("AssertEqual failed: (" + a + ", " + b +")");
-        }
-    };
-
-    var c = new Mayan.LongCount();
-
-    c.setFromCount(0);
-    assertEqual(c.toString(),"0.0.0.0.0");
-    assertEqual(c.count, 0);
-    assertEqual(c.tzolkin.toString(), "4.ajaw");
-    assertEqual(c.haab.toString(), "8.kumku");
-    assertEqual(c.lords.toString(), "g9");
-    assertEqual(c.getGregorian(), [-3113,8,11]);
-
-    c.set(13,0,0,0,0);
-    assertEqual(c.toString(),"13.0.0.0.0");
-    assertEqual(c.count, 1872000);
-    assertEqual(c.tzolkin.toString(), "4.ajaw");
-    assertEqual(c.haab.toString(), "3.kankin");
-    assertEqual(c.lords.toString(), "g9");
-    assertEqual(c.getGregorian(), [2012,12,21]);
-
-    c.setFromGregorian(1987,7,2);
-    assertEqual(c.toString(),"12.18.14.2.16");
-    assertEqual(c.count, 1862696);
-    assertEqual(c.tzolkin.toString(), "8.kib");
-    assertEqual(c.haab.toString(), "4.sek");
-    assertEqual(c.lords.toString(), "g2");
-    assertEqual(c.getGregorian(), [1987,7,2]);
-};
-
 ////////////////////////
 // Long Count Calendar
 
@@ -47,7 +10,7 @@ Mayan.LongCount = function(baktun,katun,tun,winal,kin) {
     this.winalCount = 18;
     this.kinCount = 20;
 
-    this.winalDays = 20;
+    this.winalDays = this.kinCount;
     this.tunDays = this.winalDays * this.winalCount; // 360
     this.katunDays = this.tunDays * this.tunCount; // 7200
     this.baktunDays = this.katunDays * this.katunCount; // 144000
@@ -212,7 +175,4 @@ Mayan.Lords.prototype = {
         return "g"+(this.lord+1);
     },
 };
-
-// run at startup for now
-Mayan.runTests();
 
