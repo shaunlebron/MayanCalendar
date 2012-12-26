@@ -40,22 +40,20 @@
 
     $(function(){
 
-        var cal = new Mayan.LongCount;
-        var renderer = new Mayan.Renderer(cal, document.getElementById('stela'));
-        Mayan.loadGlyphs(function() {
-            renderer.stela.updateCanvasSize();
-        });
-
+        var renderer = new Mayan.Renderer(document.getElementById('stela'));
 
         $('#dp1').datepicker({
             format: 'mm-dd-yyyy'
         }).on('changeDate', function(ev) {
-            cal.setFromDateObject(ev.date);
+            renderer.targetCal.setFromDateObject(ev.date);
         });
-
         var d = new Date();
         $('#dp1').datepicker('setValue', d);
-        cal.setFromDateObject(d);
+        renderer.targetCal.setFromDateObject(d);
+
+        Mayan.loadGlyphs(function() {
+            renderer.stela.updateCanvasSize();
+        });
 
         requestAnimationFrame(function(){renderer.render();});
     });
