@@ -39,12 +39,7 @@
     };
 
     Mayan.runMechCounterTests = function() {
-        var kinDigit =      new Mayan.MechCounterDigit(0,20);
-        var winalDigit =    new Mayan.MechCounterDigit(0,18);
-        var tunDigit =      new Mayan.MechCounterDigit(0,20);
-        var katunDigit =    new Mayan.MechCounterDigit(0,20);
-        var baktunDigit =   new Mayan.MechCounterDigit(0,20);
-        var counter = new Mayan.MechCounter(kinDigit,winalDigit,tunDigit,katunDigit,baktunDigit);
+        var counter = Mayan.makeMechCounter();
 
         assertEqual(counter.max, 2880000);
 
@@ -73,7 +68,6 @@
         assertEqual(counter.toString(), "12.25:19.25:19.25:17.25:19.25");
         assertEqual(counter.calcTotal(), Math.floor(total));
     };
-
 
     // run
     Mayan.runCalendarTests();

@@ -10,6 +10,14 @@ Mayan.LongCount = function(baktun,katun,tun,winal,kin) {
     this.winalCount = 18;
     this.kinCount = 20;
 
+    this.smoothCount = 0;
+    this.smoothCounter = new Mayan.MechCounter(
+        new Mayan.MechCounterDigit(0,this.kinCount),
+        new Mayan.MechCounterDigit(0,this.winalCount),
+        new Mayan.MechCounterDigit(0,this.tunCount),
+        new Mayan.MechCounterDigit(0,this.katunCount),
+        new Mayan.MechCounterDigit(0,this.baktunCount));
+
     this.winalDays = this.kinCount;
     this.tunDays = this.winalDays * this.winalCount; // 360
     this.katunDays = this.tunDays * this.tunCount; // 7200
@@ -29,10 +37,34 @@ Mayan.LongCount.prototype = {
         return [this.baktun,this.katun,this.tun,this.winal,this.kin].join(".");
     },
 
+    setSmoothCount: function(count) {
+        this.smoothCount = count;
+        this.smoothCounter.set(count);
+        this.smoothBaktun =   this.smoothCounter.digits[4].count;
+        this.smoothKatun =    this.smoothCounter.digits[3].count;
+        this.smoothTun =      this.smoothCounter.digits[2].count;
+        this.smoothWinal =    this.smoothCounter.digits[1].count;
+        this.smoothKin =      this.smoothCounter.digits[0].count;
+
+        this.tzolkin.setSmoothCount(count);
+        this.haab.setSmoothCount(count);
+        this.lords.setSmoothCount(count);
+        
+        this.setFromCount(Math.floor(count));
+    },
+
+    updateDependentCalendars: function() {
+        this.tzolkin.setFromCount(this.count);
+        this.haab.setFromCount(this.count);
+        this.lords.setFromCount(this.count);
+    },
+
     setFromCount: function(count) {
         count %= this.maxDays;
         this.count = count;
         this.updateDependentCalendars();
+
+        this.kin = count % this.winalDays;
 
         this.baktun = Math.floor(count / this.baktunDays);
         count %= this.baktunDays;
@@ -41,13 +73,6 @@ Mayan.LongCount.prototype = {
         this.tun = Math.floor(count / this.tunDays);
         count %= this.tunDays;
         this.winal = Math.floor(count / this.winalDays);
-        this.kin = count % this.winalDays;
-    },
-
-    updateDependentCalendars: function() {
-        this.tzolkin.setFromCount(this.count);
-        this.haab.setFromCount(this.count);
-        this.lords.setFromCount(this.count);
     },
 
     set: function(baktun,katun,tun,winal,kin) {
@@ -104,6 +129,12 @@ Mayan.Tzolkin = function() {
 };
 
 Mayan.Tzolkin.prototype = {
+    setSmoothCount: function(count) {
+        this.smoothNum = (this.numStart + count) % this.numCount;
+        this.smoothDay = (this.dayStart + count) % this.dayCount;
+        this.setFromCount(Math.floor(count));
+    },
+
     setFromCount: function(count) {
         this.num = (this.numStart + count) % this.numCount;
         this.day = (this.dayStart + count) % this.dayCount;
@@ -134,11 +165,28 @@ Mayan.Haab = function() {
     this.daysPerMonth = 20;
     this.daysPerYear = 365;
 
+    this.monthsPerYear = Math.ceil(this.daysPerYear / this.daysPerMonth);
+    this.daysPerLastMonth = this.daysPerYear - (this.monthsPerYear-1) * this.daysPerMonth;
+
     this.dayStart = 8;
     this.monthStart = 17; // kumku
 };
 
 Mayan.Haab.prototype = {
+    setSmoothCount: function(count) {
+        count = (count + this.monthStart*this.daysPerMonth + this.dayStart) % this.daysPerYear;
+        this.month = Math.floor(count / this.daysPerMonth);
+        this.smoothDay = count % this.daysPerMonth;
+
+        var daysThisMonth = (this.month == this.monthsPerYear - 1) ? this.daysPerLastMonth : this.dayPerMonth;
+
+        if (this.smoothDay > daysThisMonth - 1) {
+            this.smoothMonth = this.month + (this.smoothDay % 1);
+        }
+
+        this.setFromCount(Math.floor(count));
+    },
+
     setFromCount: function(count) {
         count = (count + this.monthStart*this.daysPerMonth + this.dayStart) % this.daysPerYear;
         this.month = Math.floor(count / this.daysPerMonth);
@@ -164,11 +212,17 @@ Mayan.Haab.prototype = {
 Mayan.Lords = function() {
     this.lord = 0;
     this.lordCount = 9;
+    this.lordStart = 8;
 };
 
 Mayan.Lords.prototype = {
+    setSmoothCount: function(count) {
+        this.smoothLord = (count + this.lordStart) % this.lordCount;
+        this.setFromCount(Math.floor(count));
+    },
+
     setFromCount: function(count) {
-        this.lord = (count + 8) % this.lordCount;
+        this.lord = (count + this.lordStart) % this.lordCount;
     },
 
     toString: function() {

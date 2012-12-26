@@ -54,3 +54,16 @@ Mayan.MechCounterDigit.prototype = {
         return Math.floor(this.count);
     },
 };
+
+Mayan.makeMechCounter = function() {
+
+    var kinDigit =      new Mayan.MechCounterDigit(0,20);
+    var winalDigit =    new Mayan.MechCounterDigit(0,18);
+    var tunDigit =      new Mayan.MechCounterDigit(0,20);
+    var katunDigit =    new Mayan.MechCounterDigit(0,20);
+    var baktunDigit =   new Mayan.MechCounterDigit(0,20);
+    var counter = new Mayan.MechCounter(kinDigit,winalDigit,tunDigit,katunDigit,baktunDigit);
+
+    return counter;
+};
+
