@@ -5,11 +5,13 @@
 <title>Mayan Calendar</title>
 
 <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="lib/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+<link href="lib/jquery-ui-1.9.2.custom/css/smoothness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+<link href="lib/jquery-bootstrap-slider/css/bootstrap-slider.css" rel="stylesheet">
 
 <style>
     #gregorian {
-        font-family: "Courier New";
+        position: relative;
+        /*font-family: "Courier New";*/
     }
 </style>
 
@@ -18,11 +20,6 @@
 <div class="container">
     <h1>Mayan Calendar</h2>
     <div class="well">
-<!--
-        <label>Gregorian Date</label>
-        <input type="text" id="dp1" />
--->
-        <label id="gregorian"></label>
         <div id="slider"></div>
     </div>
     <div class="well navbar-fixed-bottom" style="text-align:center">
@@ -43,8 +40,8 @@
 <script src="mayan/renderer.js"></script>
 <script src="mayan/tests.js"></script>
 
-<script src="lib/jquery-ui-bootstrap/js/jquery-1.6.2.min.js"></script>
-<script src="lib/jquery-ui-bootstrap/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script src="lib/jquery-1.8.3.min.js"></script>
+<script src="lib/jquery-bootstrap-slider/js/jquery-ui.min.js"></script>
 <script src="lib/bootstrap/js/bootstrap.js"></script>
 <script>
 // zero-padding from: 
@@ -101,6 +98,39 @@ var mayan_days_to_gregorian_str = function(count) {
     return monthStr + " " + dayStr + ", " + yearStr;
 };
 
+// custom function to refresh a Bootstrap Tooltip (in case its anchor has moved)
+// (I copied the Tooltip.prototype.show method for the important bits)
+var refreshTooltip = function(t) {
+    var $tip = t.tip();
+    $tip.find('.tooltip-inner')[t.options.html ? 'html' : 'text'](t.getTitle());
+
+    var placement = typeof t.options.placement == 'function' ?
+        t.options.placement.call(t, $tip[0], t.$element[0]) :
+        t.options.placement;
+    var inside = /in/.test(placement);
+    var pos = t.getPosition(inside);
+
+    actualWidth = $tip[0].offsetWidth;
+    actualHeight = $tip[0].offsetHeight;
+
+    switch (inside ? placement.split(' ')[1] : placement) {
+        case 'bottom':
+            tp = {top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2};
+            break;
+        case 'top':
+            tp = {top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2};
+            break;
+        case 'left':
+            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth};
+            break;
+        case 'right':
+            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width};
+            break;
+    }
+
+    $tip.offset(tp);
+};
+
 </script>
 <script>
 
@@ -108,24 +138,33 @@ var mayan_days_to_gregorian_str = function(count) {
 
         var renderer = new Mayan.Renderer(document.getElementById('stela'));
 
-        var gregorianLabel = $('#gregorian');
+        var sliderHandle;
+        var sliderTooltip;
 
-        var d = todaysdate();
         var updateCount = function(count) {
             renderer.targetCal.setFromCount(count);
-            gregorianLabel.html(mayan_days_to_gregorian_str(count));
+            var text = mayan_days_to_gregorian_str(count);
+            sliderTooltip.options.title = text;
+            refreshTooltip(sliderTooltip);
         };
-        var initialCount = gregorian_to_mayan_days.apply(null, d);
-        updateCount(initialCount);
+
+        var initialCount = gregorian_to_mayan_days.apply(null, todaysdate());
         $('#slider').slider({
             min:0,
-            range: "min",
+            //range: "min",
             max:2880000,
             step:1,
             slide: function(evt,ui) { updateCount(ui.value); },
             change: function(evt,ui) { updateCount(ui.value); },
             value: initialCount,
         });
+
+        sliderHandle = $('#slider .ui-slider-handle');
+        sliderHandle.tooltip({title:' ',trigger:"manual",placement:"bottom"});
+        sliderHandle.tooltip("show");
+        sliderTooltip = sliderHandle.data('tooltip');
+
+        updateCount(initialCount);
 
         Mayan.loadGlyphs(function() {
             renderer.stela.updateCanvasSize();

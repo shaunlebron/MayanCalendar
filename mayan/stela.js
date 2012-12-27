@@ -125,7 +125,9 @@ Mayan.StelaWheel.prototype = {
         var y0 = (index % 1)*h;
         ctx.drawImage(nextImg,x,y+y0-h);
         var w0 = currImg.width, h0 = Math.max(0,currImg.height-y0);
-        ctx.drawImage(currImg, 0,0,w0,h0, x,y+y0,w0,h0);
+        if (h0 > 0) {
+            ctx.drawImage(currImg, 0,0,w0,h0, x,y+y0,w0,h0);
+        }
 
         return w;
     },
