@@ -60,7 +60,7 @@ Mayan.LongCount.prototype = {
     },
 
     setFromCount: function(count) {
-        count %= this.maxDays;
+        //count %= this.maxDays;
         this.count = count;
         this.updateDependentCalendars();
 
