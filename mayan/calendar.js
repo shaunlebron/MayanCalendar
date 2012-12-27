@@ -178,7 +178,7 @@ Mayan.Haab.prototype = {
         this.smoothMonth = Math.floor(count / this.daysPerMonth);
         this.smoothDay = count % this.daysPerMonth;
 
-        this.daysThisMonth = (this.month == this.monthsPerYear - 1) ? this.daysPerLastMonth : this.dayPerMonth;
+        this.daysThisMonth = (this.smoothMonth == this.monthsPerYear - 1) ? this.daysPerLastMonth : this.daysPerMonth;
 
         if (this.smoothDay > this.daysThisMonth - 1) {
             this.smoothMonth += (this.smoothDay % 1);

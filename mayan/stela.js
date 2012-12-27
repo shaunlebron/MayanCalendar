@@ -40,7 +40,8 @@ Mayan.Stela = function(canvas,cal) {
 
         new Mayan.StelaWheel(
             ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19"],
-            function() { return cal.haab.smoothDay; }),
+            function() { return cal.haab.smoothDay; },
+            function() { return cal.haab.daysThisMonth; }),
         new Mayan.StelaWheel(
             Mayan.haab_months,
             function() { return cal.haab.smoothMonth; }),
@@ -110,15 +111,12 @@ Mayan.StelaWheel.prototype = {
         var length = this.getLength();
 
         var currIndex = Math.floor(index);
-        var prevIndex = (currIndex + length-1) % length;
         var nextIndex = (currIndex + 1) % length;
 
         var currName = this.names[currIndex];
-        var prevName = this.names[prevIndex];
         var nextName = this.names[nextIndex];
 
         var currImg = Mayan.glyphImages[currName];
-        var prevImg = Mayan.glyphImages[prevName];
         var nextImg = Mayan.glyphImages[nextName];
 
         var w = this.bounds.width;
@@ -126,8 +124,8 @@ Mayan.StelaWheel.prototype = {
 
         var y0 = (index % 1)*h;
         ctx.drawImage(nextImg,x,y+y0-h);
-        ctx.drawImage(currImg,x,y+y0);
-        ctx.drawImage(prevImg,x,y+y0+h);
+        var w0 = currImg.width, h0 = Math.max(0,currImg.height-y0);
+        ctx.drawImage(currImg, 0,0,w0,h0, x,y+y0,w0,h0);
 
         return w;
     },
