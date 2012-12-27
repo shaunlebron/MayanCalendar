@@ -10,7 +10,6 @@ Mayan.LongCount = function(baktun,katun,tun,winal,kin) {
     this.winalCount = 18;
     this.kinCount = 20;
 
-    this.smoothCount = 0;
     this.smoothCounter = new Mayan.MechCounter(
         new Mayan.MechCounterDigit(0,this.kinCount),
         new Mayan.MechCounterDigit(0,this.winalCount),
@@ -30,6 +29,7 @@ Mayan.LongCount = function(baktun,katun,tun,winal,kin) {
     this.lords = new Mayan.Lords();
 
     this.set(baktun,katun,tun,winal,kin);
+    this.setSmoothCount(this.count);
 };
 
 Mayan.LongCount.prototype = {
@@ -175,13 +175,13 @@ Mayan.Haab = function() {
 Mayan.Haab.prototype = {
     setSmoothCount: function(count) {
         count = (count + this.monthStart*this.daysPerMonth + this.dayStart) % this.daysPerYear;
-        this.month = Math.floor(count / this.daysPerMonth);
+        this.smoothMonth = Math.floor(count / this.daysPerMonth);
         this.smoothDay = count % this.daysPerMonth;
 
-        var daysThisMonth = (this.month == this.monthsPerYear - 1) ? this.daysPerLastMonth : this.dayPerMonth;
+        this.daysThisMonth = (this.month == this.monthsPerYear - 1) ? this.daysPerLastMonth : this.dayPerMonth;
 
-        if (this.smoothDay > daysThisMonth - 1) {
-            this.smoothMonth = this.month + (this.smoothDay % 1);
+        if (this.smoothDay > this.daysThisMonth - 1) {
+            this.smoothMonth += (this.smoothDay % 1);
         }
 
         this.setFromCount(Math.floor(count));
