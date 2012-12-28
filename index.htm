@@ -1,177 +1,188 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Mayan Calendar</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Mayan Calendar</title>
 
-<link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="lib/jquery-ui-1.9.2.custom/css/smoothness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
-<link href="lib/jquery-bootstrap-slider/css/bootstrap-slider.css" rel="stylesheet">
-
-<style>
-    #gregorian {
-        position: relative;
-        /*font-family: "Courier New";*/
-    }
-</style>
+    <!-- bootstrap css files -->
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="lib/jquery-ui-1.9.2.custom/css/smoothness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
+    <link href="lib/jquery-bootstrap-slider/css/bootstrap-slider.css" rel="stylesheet">
 
 </head>
+
 <body>
-<div class="container">
-    <h1>Mayan Calendar</h2>
-    <div class="well">
-        <div id="slider"></div>
+
+    <div class="container">
+        <h1>Mayan Calendar</h2>
+        <div class="well">
+            <div id="slider"></div>
+        </div>
+        <div class="well navbar-fixed-bottom" style="text-align:center">
+            <canvas id="stela" width="0" height="0"></canvas>
+        </div>
     </div>
-    <div class="well navbar-fixed-bottom" style="text-align:center">
-        <canvas id="stela" width="0" height="0"></canvas>
-    </div>
-</div>
 
+    <!-- requestAnimationFrame shim -->
+    <script src="lib/requestAnimationFrame.js"></script>
 
-<script src="lib/requestAnimationFrame.js"></script>
+    <!-- calendar conversion tool -->
+    <script src="lib/fourmilab/astro.js"></script>
+    <script src="lib/fourmilab/calendar.js"></script>
 
-<script src="lib/fourmilab/astro.js"></script>
-<script src="lib/fourmilab/calendar.js"></script>
+    <!-- Mayan calendar code -->
+    <script src="mayan/calendar.js"></script>
+    <script src="mayan/glyphs.js"></script>
+    <script src="mayan/stela.js"></script>
+    <script src="mayan/counter.js"></script>
+    <script src="mayan/renderer.js"></script>
+    <script src="mayan/tests.js"></script>
 
-<script src="mayan/calendar.js"></script>
-<script src="mayan/glyphs.js"></script>
-<script src="mayan/stela.js"></script>
-<script src="mayan/counter.js"></script>
-<script src="mayan/renderer.js"></script>
-<script src="mayan/tests.js"></script>
+    <!-- user interface components -->
+    <script src="lib/jquery-1.8.3.min.js"></script>
+    <script src="lib/jquery-bootstrap-slider/js/jquery-ui.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.js"></script>
 
-<script src="lib/jquery-1.8.3.min.js"></script>
-<script src="lib/jquery-bootstrap-slider/js/jquery-ui.min.js"></script>
-<script src="lib/bootstrap/js/bootstrap.js"></script>
-<script>
-// zero-padding from: 
-// http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
-function paddy(n, p, c) {
-    var pad_char = typeof c !== 'undefined' ? c : '0';
-    var pad = new Array(1 + p).join(pad_char);
-    return (pad + n).slice(-pad.length);
-}
+    <!-- startup script -->
+    <script>
 
-// get current date from:
-// http://stackoverflow.com/questions/1531093/how-to-get-current-date-in-javascript
-function todaysdate() {
-    var today = new Date();
-    var day = today.getDate();
-    var month = today.getMonth()+1; //January is 0!
-    var year = today.getFullYear();
-    return [year,month,day];
-}
+        $(function(){
 
-// extra date conversion functions
+            // Create Mayan calendar and pass it a canvas object
+            var renderer = new Mayan.Renderer(document.getElementById('stela'));
 
-function mayan_days_to_gregorian(count) {
-    return jd_to_gregorian(MAYAN_COUNT_EPOCH + count);
-}
+            // Update the calendar with a count (number of days since Mayan creation date)
+            var updateCount = function(count) {
 
-function gregorian_to_mayan_days(year, month, day) {
-    return gregorian_to_jd(year,month,day) - MAYAN_COUNT_EPOCH;
-}
+                // Update target date for transitioning
+                renderer.targetCal.setFromCount(count);
 
-var mayan_days_to_gregorian_str = function(count) {
-    var greg = mayan_days_to_gregorian(count);
-    var year = greg[0];
-    var month = greg[1];
-    var day = greg[2];
+                // Update slider tooltip
+                var text = mayan_days_to_gregorian_str(count);
+                sliderTooltip.options.title = text;
+                refreshTooltip(sliderTooltip);
+            };
 
-    var yearStr, monthStr, dayStr;
+            // Create an initial Mayan count representing today's date
+            var initialCount = gregorian_to_mayan_days.apply(null, todaysdate());
 
-    dayStr = paddy(day,2);
+            // Initialize the slider
+            $('#slider').slider({
+                min:0,
+                max:2880000,
+                step:1,
+                slide: function(evt,ui) { updateCount(ui.value); },
+                change: function(evt,ui) { updateCount(ui.value); },
+                value: initialCount,
+            });
 
-    yearStr = "";
-    if (year <= 0) {
-        year = -year+1;
-        yearStr += " BC";
-    }
-    else {
-        yearStr += " AD";
-    }
-    yearStr = paddy(year,4) + yearStr;
+            // Initialize the slider tooltip
+            var sliderHandle = $('#slider .ui-slider-handle');
+            sliderHandle.tooltip({title:' ',trigger:"manual",placement:"bottom"});
+            sliderHandle.tooltip("show");
+            var sliderTooltip = sliderHandle.data('tooltip');
 
-    monthStr = [ "", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", ][month];
+            // Set the initial date
+            updateCount(initialCount);
 
-    //return dayStr + " " + monthStr + " " + yearStr;
-    return monthStr + " " + dayStr + ", " + yearStr;
-};
+            // Load all the glyph images and start animation when done
+            Mayan.loadGlyphs(function() {
+                renderer.stela.updateCanvasSize();
+                requestAnimationFrame(function(){renderer.render();});
+            });
+        });
+    </script>
 
-// custom function to refresh a Bootstrap Tooltip (in case its anchor has moved)
-// (I copied the Tooltip.prototype.show method for the important bits)
-var refreshTooltip = function(t) {
-    var $tip = t.tip();
-    $tip.find('.tooltip-inner')[t.options.html ? 'html' : 'text'](t.getTitle());
+    <!-- misc utility scripts -->
+    <script>
+        // zero-padding from: 
+        // http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
+        function paddy(n, p, c) {
+            var pad_char = typeof c !== 'undefined' ? c : '0';
+            var pad = new Array(1 + p).join(pad_char);
+            return (pad + n).slice(-pad.length);
+        }
 
-    var placement = typeof t.options.placement == 'function' ?
-        t.options.placement.call(t, $tip[0], t.$element[0]) :
-        t.options.placement;
-    var inside = /in/.test(placement);
-    var pos = t.getPosition(inside);
+        // get current date from:
+        // http://stackoverflow.com/questions/1531093/how-to-get-current-date-in-javascript
+        function todaysdate() {
+            var today = new Date();
+            var day = today.getDate();
+            var month = today.getMonth()+1; //January is 0!
+            var year = today.getFullYear();
+            return [year,month,day];
+        }
 
-    actualWidth = $tip[0].offsetWidth;
-    actualHeight = $tip[0].offsetHeight;
+        // extra date conversion functions
 
-    switch (inside ? placement.split(' ')[1] : placement) {
-        case 'bottom':
-            tp = {top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2};
-            break;
-        case 'top':
-            tp = {top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2};
-            break;
-        case 'left':
-            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth};
-            break;
-        case 'right':
-            tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width};
-            break;
-    }
+        function mayan_days_to_gregorian(count) {
+            return jd_to_gregorian(MAYAN_COUNT_EPOCH + count);
+        }
 
-    $tip.offset(tp);
-};
+        function gregorian_to_mayan_days(year, month, day) {
+            return gregorian_to_jd(year,month,day) - MAYAN_COUNT_EPOCH;
+        }
 
-</script>
-<script>
+        var mayan_days_to_gregorian_str = function(count) {
+            var greg = mayan_days_to_gregorian(count);
+            var year = greg[0];
+            var month = greg[1];
+            var day = greg[2];
 
-    $(function(){
+            var dayStr = paddy(day,2);
 
-        var renderer = new Mayan.Renderer(document.getElementById('stela'));
+            var yearStr = "";
+            if (year <= 0) {
+                year = -year+1;
+                yearStr += " BC";
+            }
+            else {
+                yearStr += " AD";
+            }
+            yearStr = paddy(year,4) + yearStr;
 
-        var sliderHandle;
-        var sliderTooltip;
+            var monthStr = [
+                "", "Jan", "Feb", "Mar", "Apr", "May","Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", ][month];
 
-        var updateCount = function(count) {
-            renderer.targetCal.setFromCount(count);
-            var text = mayan_days_to_gregorian_str(count);
-            sliderTooltip.options.title = text;
-            refreshTooltip(sliderTooltip);
+            return monthStr + " " + dayStr + ", " + yearStr;
         };
 
-        var initialCount = gregorian_to_mayan_days.apply(null, todaysdate());
-        $('#slider').slider({
-            min:0,
-            //range: "min",
-            max:2880000,
-            step:1,
-            slide: function(evt,ui) { updateCount(ui.value); },
-            change: function(evt,ui) { updateCount(ui.value); },
-            value: initialCount,
-        });
+        // custom function to refresh a Bootstrap Tooltip (in case its anchor has moved)
+        // (I copied the Tooltip.prototype.show method for the important bits)
+        var refreshTooltip = function(t) {
+            var $tip = t.tip();
+            $tip.find('.tooltip-inner')[t.options.html ? 'html' : 'text'](t.getTitle());
 
-        sliderHandle = $('#slider .ui-slider-handle');
-        sliderHandle.tooltip({title:' ',trigger:"manual",placement:"bottom"});
-        sliderHandle.tooltip("show");
-        sliderTooltip = sliderHandle.data('tooltip');
+            var placement = typeof t.options.placement == 'function' ?
+                t.options.placement.call(t, $tip[0], t.$element[0]) :
+                t.options.placement;
+            var inside = /in/.test(placement);
+            var pos = t.getPosition(inside);
 
-        updateCount(initialCount);
+            actualWidth = $tip[0].offsetWidth;
+            actualHeight = $tip[0].offsetHeight;
 
-        Mayan.loadGlyphs(function() {
-            renderer.stela.updateCanvasSize();
-            requestAnimationFrame(function(){renderer.render();});
-        });
-    });
-</script>
+            switch (inside ? placement.split(' ')[1] : placement) {
+                case 'bottom':
+                    tp = {top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2};
+                    break;
+                case 'top':
+                    tp = {top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2};
+                    break;
+                case 'left':
+                    tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth};
+                    break;
+                case 'right':
+                    tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width};
+                    break;
+            }
+
+            $tip.offset(tp);
+        };
+
+    </script>
 
 </body>
 </html>
