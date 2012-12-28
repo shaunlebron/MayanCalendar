@@ -8,6 +8,12 @@
 
 The purpose of this project is to illustrate the different cycles represented by the ancient Mayan Calendars.
 
+## Tools Used
+
+* [Bootstrap](http://twitter.github.com/bootstrap/)
+* [jquery-bootstrap-slider](https://github.com/logicmd/jquery-bootstrap-slider)
+* [Fourmilab's calendar tools](http://www.fourmilab.ch/documents/calendar/)
+
 ## Resources
 
 * Images and Testing courtesy of http://research.famsi.org/date_mayaLC.php
