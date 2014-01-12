@@ -1,8 +1,8 @@
 # Mayan Calendar
 
-[Click here to view current version](http://shaunew.github.com/MayanCalendar/)
+[Click here to view current version](http://shaunlebron.github.io/MayanCalendar/)
 
-<img src="http://shaunew.github.com/MayanCalendar/img/13.gif"><img src="http://shaunew.github.com/MayanCalendar/img/baktun.gif"><img src="http://shaunew.github.com/MayanCalendar/img/0.gif"><img src="http://shaunew.github.com/MayanCalendar/img/katun.gif"><img src="http://shaunew.github.com/MayanCalendar/img/0.gif"><img src="http://shaunew.github.com/MayanCalendar/img/tun.gif"><img src="http://shaunew.github.com/MayanCalendar/img/0.gif"><img src="http://shaunew.github.com/MayanCalendar/img/winal.gif"><img src="http://shaunew.github.com/MayanCalendar/img/0.gif"><img src="http://shaunew.github.com/MayanCalendar/img/kin.gif"><img src="http://shaunew.github.com/MayanCalendar/img/4.gif"><img src="http://shaunew.github.com/MayanCalendar/img/tzolkin/ajaw.gif"><img src="http://shaunew.github.com/MayanCalendar/img/3.gif"><img src="http://shaunew.github.com/MayanCalendar/img/haab/kankin.gif"><img src="http://shaunew.github.com/MayanCalendar/img/g9.gif">
+<img src="img/13.gif"><img src="img/baktun.gif"><img src="img/0.gif"><img src="img/katun.gif"><img src="img/0.gif"><img src="img/tun.gif"><img src="img/0.gif"><img src="img/winal.gif"><img src="img/0.gif"><img src="img/kin.gif"><img src="img/4.gif"><img src="img/tzolkin/ajaw.gif"><img src="img/3.gif"><img src="img/haab/kankin.gif"><img src="img/g9.gif">
 
 21 Dec 2012 on the Gregorian Calendar marked the beginning of a new cycle on the Mayan Long Count Calendar (shown above).
 
